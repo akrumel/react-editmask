@@ -1,0 +1,51 @@
+{
+  "name": "react-editmask",
+  "version": "1.0.0",
+  "description": "A masked input component for react",
+  "author": "Andy Krumel",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akrumel/react-editmask"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "akutils": "^1.0.0",
+    "lodash.clone": "^4.5.0",
+    "lodash.defaults": "^4.2.0",
+    "lodash.isplainobject": "^4.0.4",
+    "lodash.isundefined": "^3.0.1",
+    "lodash.omit": "^4.5.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.7.7",
+    "babel-core": "^6.7.2",
+    "babel-loader": "^6.2.4",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.7.7",
+    "babel-plugin-transform-es2015-spread": "^6.6.5",
+    "babel-plugin-transform-object-rest-spread": "^6.6.5",
+    "babel-preset-es2015": "^6.6.0",
+    "babel-preset-react": "^6.16.0",
+    "cross-env": "^1.0.7",
+    "jest-cli": "^17.0.3",
+    "rimraf": "^2.5.2"
+  },
+  "peerDependencies": {
+    "react": "^0.14.0 || ^15.0.0-0",
+    "react-dom": "^0.14.0 || ^15.0.0-0"
+  },
+  "scripts": {
+    "build": "npm run build:commonjs",
+    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
+    "clean": "rimraf lib dist es coverage",
+    "test": "jest"
+  },
+  "jest": {
+    "unmockedModulePathPatterns": [
+      "<rootDir>/node_modules/"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules"
+    ]
+  }
+}
