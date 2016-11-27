@@ -42,6 +42,10 @@ export default class EditMaskExample extends Component {
 						preprocess={ MaskedInput.fn.numberWithCommas.pre }
 						postprocess={ MaskedInput.fn.numberWithCommas.post }
 					/>
+					<p>
+						This example utilizes the `preprocess` and `postprocess` properties for add/remove the commas
+						independent of the edit masking.
+					</p>
 				</div>
 
 			</div>

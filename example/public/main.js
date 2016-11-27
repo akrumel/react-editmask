@@ -21573,7 +21573,12 @@
 							placeholder: "d+(/.d*)?",
 							preprocess: _reactEditmask2.default.fn.numberWithCommas.pre,
 							postprocess: _reactEditmask2.default.fn.numberWithCommas.post
-						})
+						}),
+						_react2.default.createElement(
+							"p",
+							null,
+							"This example utilizes the `preprocess` and `postprocess` properties for add/remove the commas independent of the edit masking."
+						)
 					)
 				);
 			}
