@@ -48,7 +48,7 @@ This module contain two main files:
 	                          parentheses are used to group a set of pattern expressions, usually
 	                          to apply an multiplicity operator like '?' or '+')
 
-####Example usage
+#### Example usage
 
 ```
 <MaskedInput
@@ -63,3 +63,11 @@ An example is included to demonstrate the edit mask concepts and use of the buil
 and comma pre/post processing functions.
 
 View the [react-editmask example](https://akrumel.github.io/react-editmask/)
+
+
+### Not yet implemented
+	a - alpha character (case insensitive)
+	U - uppercase alpha (converts lowercase letters)
+	L - lowercase alpha
+	w - alpha or numerical (case insensitive)
+	{m[,n]} - m..n of the previous symbol or literal
