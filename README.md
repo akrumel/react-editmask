@@ -61,3 +61,5 @@ This module contain two main files:
 
 An example is included to demonstrate the edit mask concepts and use of the built-in edit masks
 and comma pre/post processing functions.
+
+View the [react-editmask example](https://akrumel.github.io/react-editmask/)
