@@ -9,14 +9,15 @@ This project template was built with [Create React App](https://github.com/faceb
 
 The project consists of the following files:
 
-* main.js - the javascript entry point file that renders the UI.
-* EditMaskExample.js - the react UI
-* styles.css - the very simple stying
+* main.js - the javascript entry point file that renders the UI
+* EditMaskExample.js - the react UI containing the react-editmask tags
 
 
 ## Setup
 
-### `npm install`
+Intall the necessary modules:
+
+`npm install`
 
 
 ## Available Scripts
