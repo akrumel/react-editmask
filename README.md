@@ -84,8 +84,8 @@ Here is an example of a MaskedInput that inserts commas for a floating point num
 />
 ```
 
-See the [numberWithCommasPre]()
-and [numberWithCommasPost]()
+See the [numberWithCommasPre](https://github.com/akrumel/react-editmask/blob/master/src/fn/numberWithCommasPre.js)
+and [numberWithCommasPost](https://github.com/akrumel/react-editmask/blob/master/src/fn/numberWithCommasPost.js)
 functions for an example of how to write these functions.
 
 ### Module contents
