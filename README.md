@@ -171,7 +171,7 @@ Any props supported by `<input>` components.
 
 ### `value` : `string`
 
-The standard React <input> value property.
+The standard React <input> `value` property.
 
 ### `isComplete()` : `boolean`
 
