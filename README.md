@@ -169,9 +169,13 @@ Any props supported by `<input>` components.
 
 ## API
 
-### `value`
+### `value` : `string`
+
+The standard React <input> value property.
 
 ### `isComplete()` : `boolean`
+
+Returns `true` if the input value completely satisfies the mask.
 
 ### Masks
 
