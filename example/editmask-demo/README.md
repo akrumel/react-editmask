@@ -3,6 +3,8 @@
 A simple example demonstrating setting up the EditMask component using the supplied
 masks along with an example demonstrating interactive commas.
 
+[View this example](https://akrumel.github.io/react-editmask/)
+
 This project template was built with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 ## Files
