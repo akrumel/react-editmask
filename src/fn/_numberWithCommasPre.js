@@ -1,5 +1,5 @@
 
-export default function NumberWithCommasPre(value, config) {
+export default function numberWithCommasPre(value, config) {
 	var { selectionStart, selectionEnd } = config;
 	const next = value && value.replace(/,/g, '');
 
@@ -23,5 +23,5 @@ export default function NumberWithCommasPre(value, config) {
 	config.selectionEnd = selectionEnd;
 	config.selectionStart = selectionStart;
 
-	return next
+	return next;
 }

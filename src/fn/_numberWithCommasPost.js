@@ -1,5 +1,5 @@
 
-export default function NumberWithCommasPost(config) {
+export default function numberWithCommasPost(config) {
 	var { selectionStart, selectionEnd, text } = config;
 
 	if (!text) { return text }
