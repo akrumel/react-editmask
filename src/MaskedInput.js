@@ -232,7 +232,7 @@ MaskedInput.zipMask = "ddddd";
 
 MaskedInput.fn = {
 	numberWithCommas: {
-		pre: require("./fn/_numberWithCommasPre").default,
-		post: require("./fn/_numberWithCommasPost").default,
+		pre: require("./fn/numberWithCommasPre").default,
+		post: require("./fn/numberWithCommasPost").default,
 	}
 }
