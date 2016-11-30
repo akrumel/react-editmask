@@ -139,14 +139,13 @@ Function called when the input does not have the focus. The returned value becom
 This is useful for situations where you want to increase the context while not being actively edited,
 such as appending a dollar sign.
 
-### `postprocess` : function (optional)
+### `postprocess` : `(config) => value` (optional)
 
+See the 'Augmented Masking' discussion above for details.
 
+### `preprocess` : `(value, config) => value` (optional)
 
-### `preprocess` : function (optional)
-
-
-
+See the 'Augmented Masking' discussion above for details.
 
 ### `onChange` : `(event: SyntheticEvent) => any`
 
