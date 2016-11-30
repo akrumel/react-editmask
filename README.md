@@ -25,6 +25,12 @@ This assumes you are using [npm](https://www.npmjs.com/) as your package manager
 />
 ```
 
+An example is included to demonstrate the edit mask concepts and use of the built-in edit masks
+and comma pre/post processing functions.
+
+View the [react-editmask example](https://akrumel.github.io/react-editmask/)
+
+
 ## Overview
 
 Edit masking with the browser's <input> is tricky because adding/removing characters before the
@@ -158,14 +164,6 @@ This will be passed a `SyntheticEvent` with the input accessible via `event.targ
 ### Other props
 
 Any props supported by `<input>` components.
-
-
-## Examples
-
-An example is included to demonstrate the edit mask concepts and use of the built-in edit masks
-and comma pre/post processing functions.
-
-View the [react-editmask example](https://akrumel.github.io/react-editmask/)
 
 
 ## Not yet implemented
