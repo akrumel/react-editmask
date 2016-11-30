@@ -39,13 +39,13 @@ expression that is not a mask character is a literal character.
 
 Inserting literal characters is a central feature of all edit masks. This allows typing
 '1234567890' to be transformed into '(123) 456-7890' or '11111900' to become '11/11/1990'.
-Intuitively handling the deletiong of inserted formatted characters was an important design
+Intuitively handling the deletion of inserted formatted characters was an important design
 goal for react-editmask. This is accomplished by inserting literal characters only when required
 to match the next mask character, a feature called lookahead.
 
 An example should help clarify deletion handling. The edit mask for a US phone number could be
-'(ddd) ddd-dddd' where 'd' is the mask character matching a number character. The literals are
-'(', ')', ' ', and '-' characters. Then starting with an empty <input>:
+'(ddd) ddd-dddd', where 'd' is the mask character matching a number character. The literals are
+'(', ')', ' ', and '-' characters. Starting with an empty <input>:
 
 | Time | Display | Type   | Output |
 |------|---------|--------|--------|
@@ -62,8 +62,8 @@ commonly desired feature that is tricky and difficult to perform using regular-t
 See the stackoverflow question on this topic for a [detailed analysis](http://stackoverflow.com/a/5917250).
 The short answer is: (:?^|\s)(?=.)((?:0|(?:[1-9](?:\d*|\d{0,2}(?:,\d{3})*)))?(?:\.\d*[1-9])?)(?!\S).
 
-This problem is handled through `preprocess` and `postprocess` function properties. The function
-have the following signatures:
+This problem is handled through `preprocess` and `postprocess` properties. The properties are functions
+and have the following signatures:
 
 - `preprocess` : `(value, config) => value`
 - `postprocess` : `(config) => value`
@@ -94,7 +94,7 @@ Here is an example of a MaskedInput that inserts commas for a floating point num
 
 See the [numberWithCommasPre](https://github.com/akrumel/react-editmask/blob/master/src/fn/numberWithCommasPre.js)
 and [numberWithCommasPost](https://github.com/akrumel/react-editmask/blob/master/src/fn/numberWithCommasPost.js)
-functions for an example of how to write these functions.
+functions for implementation examples.
 
 ### Module contents
 
