@@ -17,6 +17,14 @@ npm install --save react-editmask
 This assumes you are using [npm](https://www.npmjs.com/) as your package manager.
 
 
+## Example usage
+
+```
+<MaskedInput
+	mask={ MaskedInput.zipMask }
+/>
+```
+
 ## Overview
 
 Edit masking with the browser's <input> is tricky because adding/removing characters before the
@@ -91,9 +99,9 @@ functions for an example of how to write these functions.
 ### Module contents
 
 This module contain two main files:
-* MaskedInput - renders an <input type='text' /> component with edit masking support. This component
+* `MaskedInput` - renders an <input type='text' /> component with edit masking support. This component
 	uses the EditMask class for formatting and cursor management
-* EditMask - The mask engine for times when you want to implement your own edit mask functionality.
+* `EditMask` - The mask engine for times when you want to implement your own edit mask functionality.
 
 ## Pattern expressions
 	. - any single character except newline
@@ -118,15 +126,6 @@ This module contain two main files:
 	Currency: d+(.d?d?)?      (currently '.' is not a pattern symbol as it is in regular expressions.
 	                          parentheses are used to group a set of pattern expressions, usually
 	                          to apply an multiplicity operator like '?' or '+')
-
-## Example usage
-
-```
-<MaskedInput
-	mask={ MaskedInput.zipMask }
-	placeholder={ MaskedInput.zipMask }
-/>
-```
 
 ## Properties
 
