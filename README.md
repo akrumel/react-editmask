@@ -21,7 +21,8 @@ This assumes you are using [npm](https://www.npmjs.com/) as your package manager
 
 ```
 <MaskedInput
-	mask={ MaskedInput.zipMask }
+	mask="ddd-dd-dddd"
+	placeholder="Social security number"
 />
 ```
 
@@ -164,6 +165,42 @@ This will be passed a `SyntheticEvent` with the input accessible via `event.targ
 ### Other props
 
 Any props supported by `<input>` components.
+
+
+## API
+
+### `value`
+
+### `isComplete()` : `boolean`
+
+### Masks
+
+Commonly used masks. These are simplistic and very US based but should serve as decent examples.
+Moe can be added but should probably be broken out from the class.
+
+These are static variables on the component class. Example usage:
+
+```
+<MaskedInput
+	mask={ MaskedInput.ssnMask }
+/>
+```
+
+#### `dateMask` : `dd?//dd?//dddd`
+#### `dollarsMask` : `d+(.d?d?)?`
+#### `phoneMask` : `/(ddd/) ddd-dddd`
+#### `ssnMask` : `ddd-dd-dddd`
+#### `zipMask` : `ddddd`
+
+
+### Augmentation functions
+
+#### Number with commas
+
+Pre and postprocess functions for adding commas to numeral values.
+
+- `MaskedInput.fn.numberWithCommas.pre`
+- `MaskedInput.fn.numberWithCommas.post`
 
 
 ## Not yet implemented
