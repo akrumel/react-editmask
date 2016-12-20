@@ -1,11 +1,12 @@
 import omit from "lodash.omit";
-import React, { Component } from "react";
+import React, { Component, PropTypes } from "react";
 import ReactDOM from "react-dom";
 
 import EditMask from "./EditMask";
 import identity from "./identity";
 
 const propNamesBlacklist = [
+	'acceptChar',
 	'appendLiterals',
 	'eatInvalid',
 	'formatter',
@@ -13,6 +14,7 @@ const propNamesBlacklist = [
 	'mask',
 	'postprocess',
 	'preprocess',
+	'type',
 ];
 
 
@@ -32,12 +34,13 @@ function _toString(value) {
 	exposes the isComplete() function to allow consumers of the component's value to query if the
 	mask has been fullfilled by the current value.
 
-	The component exposes some predefined masks throught the static properties:
-		dateMask - simple date mask: dd?/dd?/dddd
-		dollarsMask - US currency: d+(.d?d?)?
-		phoneMask - simple US phone number: (ddd) ddd-dddd
-		ssnMask - social security number: ddd-dd-dddd
-		zipMask - short zip code: ddddd
+	Accept Characters - 'acceptChars' property
+		The acceptChars property is an optional property that can be set to a regular expression
+		or function. This property is used to accept or reject key presses independent of the
+		edit mask. This is useful in filtering out characters excluded by the edit mask but that
+		coule trigger literal due to lookahead processsing. The enter key is passed through the
+		react onKeyPress event handler and is short-circuited past the acceptChars property
+		processing.
 
 	Formatter Function - 'formatter' property
 		The formmatter property is an optional property that can be set to a function. The
@@ -101,6 +104,17 @@ export default class MaskedInput extends Component {
 		return this.state.isComplete;
 	}
 
+	_handleBlur(event) {
+		const { onBlur } = this.props;
+
+		this.setState(
+			{
+				hasFocus: false,
+			},
+			() => onBlur && onBlur(event)
+		);
+	}
+
 	_handleChange(event) {
 		const { onChange } = this.props;
 		var value = event.target.value;
@@ -135,23 +149,14 @@ export default class MaskedInput extends Component {
 					value: masked.text
 				},
 				() => {
-						event.target.value = masked.text;
+						if (onChange) {
+							event.target.value = masked.text;
 
-						onChange && onChange(event);
+							onChange && onChange(event);
+						}
 					}
 			);
 		}
-	}
-
-	_handleBlur(event) {
-		const { onBlur } = this.props;
-
-		this.setState(
-			{
-				hasFocus: false,
-			},
-			() => onBlur && onBlur(event)
-		);
 	}
 
 	_handleFocus(event) {
@@ -163,6 +168,19 @@ export default class MaskedInput extends Component {
 			},
 			() => onFocus && onFocus(event)
 		);
+	}
+
+	_handleKeyPress(event) {
+		const { acceptChar } = this.props;
+		const { charCode, key } = event;
+
+		if (charCode === 13 /* enter */) {
+			return;
+		} else if (acceptChar instanceof RegExp && !acceptChar.test(key)) {
+			event.preventDefault();
+		} else if (typeof acceptChar === 'function' && !acceptChar(key, value, target.selectionStart, target.selectionEnd)) {
+			event.preventDefault();
+		}
 	}
 
 	_updateValue(props=this.props) {
@@ -189,7 +207,7 @@ export default class MaskedInput extends Component {
 	}
 
 	render() {
-		const { formatter } = this.props;
+		const { formatter, type } = this.props;
 		var value = this.state.value;
 		var props = omit(this.props, propNamesBlacklist);
 
@@ -204,31 +222,39 @@ export default class MaskedInput extends Component {
 				ref="input"
 				type="text"
 				value={ value }
+				onBlur={ event => this._handleBlur(event) }
 				onChange={ event => this._handleChange(event) }
 				onFocus={ event => this._handleFocus(event) }
-				onBlur={ event => this._handleBlur(event) }
+				onKeyPress={ event => this._handleKeyPress(event) }
+				type={ type==="password" ?type :"text" }
 			/>
 	}
  }
 
 MaskedInput.defaultProps = {
+	acceptChar: /./,
 	preprocess: identity,
 	postprocess: identity,
+	type: "text",
 }
 
 MaskedInput.propTypes = {
-	formatter: React.PropTypes.func,
-	mask: React.PropTypes.string.isRequired,
-	preprocess: React.PropTypes.func,
-	postprocess: React.PropTypes.func,
+	acceptChar: PropTypes.oneOfType([
+			PropTypes.func,
+			PropTypes.instanceOf(RegExp),
+		]),
+	formatter: PropTypes.func,
+	mask: PropTypes.string.isRequired,
+	preprocess: PropTypes.func,
+	postprocess: PropTypes.func,
 },
 
-MaskedInput.dateMask = "dd?//dd?//dddd";
-MaskedInput.dollarsMask = "d+(.d?d?)?";
-MaskedInput.phoneMask = "/(ddd/) ddd-dddd";
-MaskedInput.ssnMask = "ddd-dd-dddd";
-MaskedInput.zipMask = "ddddd";
-
+MaskedInput.acceptChar = {
+	digits: /\d/,                   // us zip code
+	digitsAndDashes: /[\d-]/,       // us ssn #
+	digitsAndSlashes: /[\d\/]/,     // dates
+	digitsAndDots: /[\d\.]/,        // floating point number such as currency
+}
 
 MaskedInput.fn = {
 	numberWithCommas: {

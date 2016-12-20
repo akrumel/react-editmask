@@ -94,6 +94,7 @@ Here is an example of a MaskedInput that inserts commas for a floating point num
 ```
 <MaskedInput
 	mask="d+(/.d*)?"
+	acceptChars={ MaskedInput.acceptChar.digitsAdDots  }
 	preprocess={ MaskedInput.fn.numberWithCommas.pre }
 	postprocess={ MaskedInput.fn.numberWithCommas.post }
 />
@@ -140,6 +141,32 @@ This module contain two main files:
 
 the masking pattern to be applied to the `<input>`
 
+### `acceptChars` : function or regular expression (optional - default is `/./` which allows all characters)
+
+The acceptChars property is an optional property that can be set to a regular expression or function. This property is used to accept or reject key presses independent of the edit mask. This is useful in filtering out characters excluded by the edit mask but that coule trigger literal due to lookahead processsing. The enter key is passed through the react onKeyPress event handler and is short-circuited past the acceptChars property processing.
+
+Function signature is:
+
+```
+acceptChar(key, value, selectionStart, selectionEnd)
+```
+
+Returns `true` to allow the character and `false` to exclude. Specifying a function for this property is an advanced use case and most situations are more easily handled using a regular expression.
+
+Masks containing literal characters often require an `acceptChar` property to prevent non-matching characters from truncating the value from the cursor and inserting the next literal. For example, consider this edit mask for USD:
+
+```
+<MaskedInput
+	mask="d+(.d?d?)?"
+	acceptChars={ /[\d\.]/ }
+/>
+```
+
+The `acceptChars` property will only allow digits and the `.` (period). All other characters are excluded from being processed by the mask. Without the `acceptChars` property, typing the letter `a` into `12I34.5` (where `I` represents the cursor) would result in the value being `12.`.
+
+As a general rule, if you mask contains literals then build a regular expression that excludes all characters not in the mask. This could be done by default by the component and may be implemented in the future.
+
+
 ### `formatter` : function (optional)
 
 Function called when the input does not have the focus. The returned value becomes the display value.
@@ -179,23 +206,15 @@ Returns `true` if the input value completely satisfies the mask.
 
 ### Masks
 
-Commonly used masks. These are simplistic and very US based but should serve as decent examples.
-Moe can be added but should probably be broken out from the class.
-
-These are static variables on the component class. Example usage:
+Commonly used masks are specified in country files in the `lib` directory.  At present there is a single file for the US:
 
 ```
+import { float } from "react-editmask/lib/usMasks";
+
 <MaskedInput
-	mask={ MaskedInput.ssnMask }
+	mask={ float }
 />
 ```
-
-#### `dateMask` : `dd?//dd?//dddd`
-#### `dollarsMask` : `d+(.d?d?)?`
-#### `phoneMask` : `/(ddd/) ddd-dddd`
-#### `ssnMask` : `ddd-dd-dddd`
-#### `zipMask` : `ddddd`
-
 
 ### Augmentation functions
 

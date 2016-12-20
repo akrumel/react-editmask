@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 
 import MaskedInput from "react-editmask";
-
+import {
+	float,
+	phone,
+	ssn,
+	zip,
+} from "react-editmask/lib/usMasks";
 
 export default class EditMaskExample extends Component {
 	render() {
@@ -13,32 +18,35 @@ export default class EditMaskExample extends Component {
 				<div className="example">
 					<label>Zip code</label>
 					<MaskedInput
-						mask={ MaskedInput.zipMask }
-						placeholder={ MaskedInput.zipMask }
+						mask={ zip }
+						placeholder={ zip }
 					/>
 				</div>
 
 				<div className="example">
 					<label>Social Security Number</label>
 					<MaskedInput
-						mask={ MaskedInput.ssnMask }
-						placeholder={ MaskedInput.ssnMask }
+						mask={ ssn }
+						acceptChar={ MaskedInput.acceptChar.digitsAndDashes }
+						placeholder={ ssn }
 					/>
 				</div>
 
 				<div className="example">
 					<label>US Phone Number</label>
 					<MaskedInput
-						mask={ MaskedInput.phoneMask }
-						placeholder={ MaskedInput.phoneMask }
+						mask={ phone }
+						acceptChar={ /[\d\(\- ]/ }
+						placeholder={ phone }
 					/>
 				</div>
 
 				<div className="example">
 					<label>Number with commas</label>
 					<MaskedInput
-						mask="d+(/.d*)?"
-						placeholder="d+(/.d*)?"
+						mask={ float }
+						acceptChar={ MaskedInput.acceptChar.digitsAndDots }
+						placeholder={ float }
 						preprocess={ MaskedInput.fn.numberWithCommas.pre }
 						postprocess={ MaskedInput.fn.numberWithCommas.post }
 					/>
