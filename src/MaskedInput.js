@@ -6,7 +6,6 @@ import EditMask from "./EditMask";
 import identity from "./identity";
 
 const propNamesBlacklist = [
-	'acceptChar',
 	'appendLiterals',
 	'eatInvalid',
 	'formatter',
@@ -33,14 +32,6 @@ function _toString(value) {
 	class. Set the edit mask by specifying a valid string on the 'mask' property. The component
 	exposes the isComplete() function to allow consumers of the component's value to query if the
 	mask has been fullfilled by the current value.
-
-	Accept Characters - 'acceptChars' property
-		The acceptChars property is an optional property that can be set to a regular expression
-		or function. This property is used to accept or reject key presses independent of the
-		edit mask. This is useful in filtering out characters excluded by the edit mask but that
-		coule trigger literal due to lookahead processsing. The enter key is passed through the
-		react onKeyPress event handler and is short-circuited past the acceptChars property
-		processing.
 
 	Formatter Function - 'formatter' property
 		The formmatter property is an optional property that can be set to a function. The
@@ -170,19 +161,6 @@ export default class MaskedInput extends Component {
 		);
 	}
 
-	_handleKeyPress(event) {
-		const { acceptChar } = this.props;
-		const { charCode, key } = event;
-
-		if (charCode === 13 /* enter */) {
-			return;
-		} else if (acceptChar instanceof RegExp && !acceptChar.test(key)) {
-			event.preventDefault();
-		} else if (typeof acceptChar === 'function' && !acceptChar(key, value, target.selectionStart, target.selectionEnd)) {
-			event.preventDefault();
-		}
-	}
-
 	_updateValue(props=this.props) {
 		const { appendLiterals, defaultValue, eatInvalid, lookahead, mask, postprocess, preprocess, value } = props;
 		var maskedValue = "";
@@ -232,29 +210,17 @@ export default class MaskedInput extends Component {
  }
 
 MaskedInput.defaultProps = {
-	acceptChar: /./,
 	preprocess: identity,
 	postprocess: identity,
 	type: "text",
 }
 
 MaskedInput.propTypes = {
-	acceptChar: PropTypes.oneOfType([
-			PropTypes.func,
-			PropTypes.instanceOf(RegExp),
-		]),
 	formatter: PropTypes.func,
 	mask: PropTypes.string.isRequired,
 	preprocess: PropTypes.func,
 	postprocess: PropTypes.func,
 },
-
-MaskedInput.acceptChar = {
-	digits: /\d/,                   // us zip code
-	digitsAndDashes: /[\d-]/,       // us ssn #
-	digitsAndSlashes: /[\d\/]/,     // dates
-	digitsAndDots: /[\d\.]/,        // floating point number such as currency
-}
 
 MaskedInput.fn = {
 	numberWithCommas: {

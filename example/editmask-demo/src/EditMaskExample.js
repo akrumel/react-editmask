@@ -27,7 +27,6 @@ export default class EditMaskExample extends Component {
 					<label>Social Security Number</label>
 					<MaskedInput
 						mask={ ssn }
-						acceptChar={ MaskedInput.acceptChar.digitsAndDashes }
 						placeholder={ ssn }
 					/>
 				</div>
@@ -36,7 +35,6 @@ export default class EditMaskExample extends Component {
 					<label>US Phone Number</label>
 					<MaskedInput
 						mask={ phone }
-						acceptChar={ /[\d\(\- ]/ }
 						placeholder={ phone }
 					/>
 				</div>
@@ -45,7 +43,6 @@ export default class EditMaskExample extends Component {
 					<label>Number with commas</label>
 					<MaskedInput
 						mask={ float }
-						acceptChar={ MaskedInput.acceptChar.digitsAndDots }
 						placeholder={ float }
 						preprocess={ MaskedInput.fn.numberWithCommas.pre }
 						postprocess={ MaskedInput.fn.numberWithCommas.post }

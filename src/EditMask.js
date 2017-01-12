@@ -3,14 +3,22 @@ import defaults from "lodash.defaults";
 import clone from "lodash.clone";
 import isUndefined from "lodash.isundefined";
 
+import capturePatternLength from "./capturePatternLength";
+import CountSpec from "./CountSpec";
+import extractGroupPattern from "./extractGroupPattern";
+import isOperator from "./isPatternOperator";
+import isValidPatternCharacter from "./isValidPatternCharacter";
+import nextToken from "./nextPatternToken";
+import { anyCharTestFn, digitTestFn } from "./patternTests";
+
 
 const defaultOptions = {
-			appendLiterals: false,
-			eatInvalid: true,
-			lookahead: true,
-			postprocess: config => { },
-			preprocess: (value, config) => value,
-		}
+	appendLiterals: false,
+	eatInvalid: true,
+	lookahead: true,
+	postprocess: config => { },
+	preprocess: (value, config) => value,
+}
 
 
 /*
@@ -154,6 +162,9 @@ export default class EditMask {
 			//text for the current grouping
 			currGroup: "",
 
+			// count group depth recursion
+			iters: 0,
+
 			captureGroup() {
 				if (this.currGroup) {
 					this.groups.push(this.currGroup);
@@ -199,56 +210,74 @@ export default class EditMask {
 		Evaluates a value against
 	*/
 	_evaluate(value, config) {
-		if (value == null || value == undefined) {
-			config.text = value;
-			config.complete = false;
+		config.iters++;
 
-			return;
-		}
+		try {
+			if (value == null || value == undefined) {
+				config.text = value;
+				config.complete = false;
 
-		var pattern = config.pattern;
-		var plen = pattern.length;
-		var lastPidx, token, countSpec;
-		var processing = true;
-
-		// Note: this loop will keep going even if value has been exceeded so can handle literal values
-		//       at end of pattern
-		while (config.pidx < plen && processing) {
-			// only parse tokens when pattern index changes
-			if (config.pidx != lastPidx) {
-				token = nextToken(config.pidx, pattern);
-				countSpec = new CountSpec(token);
+				return;
 			}
 
-			let ch = value[config.vidx];
-			// flag to indicate processing before the cursor. note, always true if appending literals
-			// because no input string characters remaining and cursor was at end of input value
-	        let posBeforeSelStart = config.text.length < config.selectionStart
-	        						|| (!ch && config.text.length==config.selectionStart);
+			var pattern = config.pattern;
+			var plen = pattern.length;
+			var lastPidx, token, countSpec;
+			var processing = true;
 
-	        // handy line for debugging jest tests
-	        // console.log(`sym=${sym}, ch=${ch}, isNumber=${isNumber} pidx=${pidx}, vidx=${vidx}`)
+			// Note: this loop will keep going even if value has been exceeded so can handle literal values
+			//       at end of pattern
+			while (config.pidx < plen && processing) {
+				// only parse tokens when pattern index changes
+				if (config.pidx != lastPidx) {
+					token = nextToken(config.pidx, pattern);
+					countSpec = new CountSpec(token);
+				}
 
-			switch(token[0]) {
-				case '.':  // any characater
-					processing = this._evaluateAnyChar(ch, token, countSpec, posBeforeSelStart, config);
+				let ch = value[config.vidx];
+				// flag to indicate processing before the cursor. note, always true if appending literals
+				// because no input string characters remaining and cursor was at end of input value
+		        let posBeforeSelStart = config.text.length < config.selectionStart
+		        						|| (!ch && config.text.length==config.selectionStart);
 
-					break;
-				case '(':  // capture group
-					processing = this._evaluateCaptureGroup(value, token, countSpec, posBeforeSelStart, config);
+		        // handy line for debugging jest tests
+		        // console.log(`sym=${sym}, ch=${ch}, isNumber=${isNumber} pidx=${pidx}, vidx=${vidx}`)
 
-					break;
-				case 'd':  // digit
-					processing = this._evaluateDigit(ch, token, countSpec, posBeforeSelStart, config);
+				if (ch && config.iters==1 && !isValidPatternCharacter(ch, pattern, config.pidx, this.eatInvalid)) {
+					if (this.eatInvalid) {
+						eatInvalid(config, posBeforeSelStart);
+						continue;
+					} else {
+						config.captureGroup();
+						config.complete = !config.usedLookahead && config.pidx >= pattern.length;
 
-					break;
-				default:   // literal
-					processing = this._evaluateLiteral(ch, token, countSpec, posBeforeSelStart, config);
+						return;
+					}
+				}
+
+				switch(token[0]) {
+					case '.':  // any characater
+						processing = this._evaluateAnyChar(ch, token, countSpec, posBeforeSelStart, config);
+
+						break;
+					case '(':  // capture group
+						processing = this._evaluateCaptureGroup(value, token, countSpec, posBeforeSelStart, config);
+
+						break;
+					case 'd':  // digit
+						processing = this._evaluateDigit(ch, token, countSpec, posBeforeSelStart, config);
+
+						break;
+					default:   // literal
+						processing = this._evaluateLiteral(ch, token, countSpec, posBeforeSelStart, config);
+				}
 			}
-		}
 
-		config.captureGroup();
-		config.complete = !config.usedLookahead && config.pidx >= pattern.length;
+			config.captureGroup();
+			config.complete = !config.usedLookahead && config.pidx >= pattern.length;
+		} finally {
+			config.iters--;
+		}
 	}
 
 	_evaluateCaptureGroup(value, token, countSpec, posBeforeSelStart, config) {
@@ -504,144 +533,9 @@ export default class EditMask {
 }
 
 
-/*
-	Helper class to count minimum and maximum number of an edit mask token allowed to exist
-	in the value string.
-*/
-class CountSpec {
-	constructor(token) {
-		var op = token[token.length-1];
-
-		if (isOperator(op)) {
-			switch (op) {
-				case "*":
-					this.operator = op;
-					this.min = 0;
-					this.max = Number.MAX_SAFE_INTEGER;
-
-					break;
-				case "?":
-					this.operator = op;
-					this.min = 0;
-					this.max = 1;
-
-					break;
-				case "+":
-					this.operator = op;
-					this.min = 1;
-					this.max = Number.MAX_SAFE_INTEGER;
-
-					break;
-				case "!":
-					this.operator = op;
-					this.min = 1;
-					this.max = 1;
-
-					break;
-				default:
-					throw new Error(`Unknown operator: ${op}`);
-			}
-		} else {
-			this.min = -1;
-			this.max = -1;
-		}
-	}
-
-	isOptional() {
-		return this.operator === "?";
-	}
-
-	isZeroOrMore() {
-		return this.operator === "*";
-	}
-
-	isOneOrMore() {
-		return this.operator === "+";
-	}
-
-	isRequired() {
-		return this.operator === "!";
-	}
-
-	isDefault() {
-		return this.min === -1;
-	}
-
-	isCustom() {
-		return !this.isDefault() && !this.operator;
-	}
-}
-
-
 /**************************************************************************************************
 	helper functions
 ***************************************************************************************************/
-
-function nextToken(pidx, pattern) {
-	var sym = pattern[pidx];
-	var length;
-
-	switch (sym) {
-		case "(":
-			length = capturePatternLength(pidx, pattern);
-
-			if (isOperator(pattern[pidx + length])) {
-				length++;
-			}
-
-			break;
-		case "/":
-			length = isOperator(pattern[pidx + 2]) ?3 :2;
-
-			break;
-		case "d":
-		case ".":
-		default:
-			length = isOperator(pattern[pidx + 1]) ?2 :1;
-	}
-
-	return pattern.substr(pidx, length);
-}
-
-function isOperator(opCandidate) {
-	switch (opCandidate) {
-		case "*":
-		case "?":
-		case "+":
-		case "!":
-			return true;
-		default:
-			return false;
-	}
-}
-
-function capturePatternLength(pidx, pattern) {
-	var length = 0;
-	var escapeActive = false;    // flag to track when literal escape is active
-	var depth = 0;               // count depth of group patterns
-	var sym;
-
-	while ((sym = pattern[pidx+length+1]) != ")" || escapeActive || depth) {
-		if (!escapeActive) {
-			if (sym == "(") {
-				depth++;
-			} else if (sym == ")") {
-				depth--;
-			}
-		}
-
-		escapeActive = sym === "/" && !escapeActive;
-		length++;
-	}
-
-	return length + 2/* parens */;
-}
-
-function extractGroupPattern(token) {
-	var count = token.length - (isOperator(token[token.length - 1]) ?3 :2);
-
-	return token.substr(1, count);
-}
 
 /*
 	Finds the next matching pattern symbol for the current value character.
@@ -694,15 +588,6 @@ function doLookahead(pidx, ch, pattern, testFn) {
 			lidx++;   // for loop will also ++
 		}
 	}
-}
-
-function anyCharTestFn(ch) {
-	// matches everything except newline
-	return ch != 0x0a ?ch :null;
-}
-
-function digitTestFn(ch) {
-	return !isNaN(parseInt(ch)) ?ch :null;
 }
 
 function eatInvalid(config, posBeforeSelStart) {

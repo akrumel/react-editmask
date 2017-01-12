@@ -3,7 +3,7 @@ jest.autoMockOff();
 describe("EditMask", () => {
 	var EditMask = require("../EditMask").default;
 
-
+console.log(EditMask)
 	it("tests any character - '.'", function() {
 		var mask = new EditMask("..");
 		var rslt;
@@ -54,13 +54,13 @@ describe("EditMask", () => {
 		expect(rslt.selectionEnd).toBe(0);
 	})
 
-	it("tests literal", function() {
+	it("tests literal with invalid", function() {
 		var mask = new EditMask("xxx");
 		var rslt;
 
 		rslt = mask.process("5", 0, 0);
-		expect(rslt.text).toBe("xxx");
-		expect(rslt.complete).toBe(true);
+		expect(rslt.text).toBe("");
+		expect(rslt.complete).toBe(false);
 		expect(rslt.selectionStart).toBe(0);
 		expect(rslt.selectionEnd).toBe(0);
 
@@ -69,12 +69,23 @@ describe("EditMask", () => {
 		expect(rslt.complete).toBe(false);
 		expect(rslt.selectionStart).toBe(0);
 		expect(rslt.selectionEnd).toBe(0);
+	})
+
+	it("tests literal", function() {
+		var mask = new EditMask("xxxd");
+		var rslt;
+
+		rslt = mask.process("5", 0, 0);
+		expect(rslt.text).toBe("xxx5");
+		expect(rslt.complete).toBe(true);
+		expect(rslt.selectionStart).toBe(0);
+		expect(rslt.selectionEnd).toBe(0);
 
 		rslt = mask.process("5", 1, 1);
-		expect(rslt.text).toBe("xxx");
+		expect(rslt.text).toBe("xxx5");
 		expect(rslt.complete).toBe(true);
-		expect(rslt.selectionStart).toBe(3);
-		expect(rslt.selectionEnd).toBe(3);
+		expect(rslt.selectionStart).toBe(4);
+		expect(rslt.selectionEnd).toBe(4);
 	})
 
 	it("tests literal optional", function() {
@@ -175,16 +186,16 @@ describe("EditMask", () => {
 		expect(rslt.text).toBe("<5 4>");
 		expect(rslt.complete).toBe(true);
 		// start and end index at 1 because < symbol inserted, 'a' eaten, '<' eaten - so cursor after < insertion
-		expect(rslt.selectionStart).toBe(1);
-		expect(rslt.selectionEnd).toBe(1);
+		expect(rslt.selectionStart).toBe(0);
+		expect(rslt.selectionEnd).toBe(0);
 
 		// bogus input as first character and last
 		rslt = mask.process("a<5 4>x", 1, 1);
 		expect(rslt.text).toBe("<5 4>");
 		expect(rslt.complete).toBe(true);
 		// start and end index at 1 because < symbol inserted, 'a' eaten, '<' eaten - so cursor after < insertion
-		expect(rslt.selectionStart).toBe(1);
-		expect(rslt.selectionEnd).toBe(1);
+		expect(rslt.selectionStart).toBe(0);
+		expect(rslt.selectionEnd).toBe(0);
 	})
 
 	it("tests numbers and literals - options: appendLiterals=true", function() {
@@ -571,8 +582,6 @@ describe("EditMask", () => {
 		expect(rslt.complete).toBe(false);
 		expect(rslt.groups.length).toBe(1);
 		expect(rslt.groups[0]).toBeUndefined();
-		expect(rslt.truncatedValue).toBe("5");
-		expect(rslt.truncatedCursor).toBe(0);
 
 		rslt = mask.process("5-", 0, 0);
 		expect(rslt.text).toBe("5-");
@@ -679,104 +688,30 @@ describe("EditMask", () => {
 
 		// cursor before incomplete capture group incomplete
 		rslt = mask.process("5", 0, 0);
-		expect(rslt.text).toBe("x");
-		expect(rslt.complete).toBe(true);
+		expect(rslt.text).toBe("");
+		expect(rslt.complete).toBe(false);
 		expect(rslt.groups.length).toBe(1);
 		expect(rslt.groups[0]).toBeUndefined();
 		expect(rslt.selectionStart).toBe(0);
 		expect(rslt.selectionEnd).toBe(0);
-		expect(rslt.truncatedValue).toBe("5");
-		expect(rslt.truncatedCursor).toBe(0);
 
 		// cursor after incomplete capture group incomplete
-		rslt = mask.process("5", 1, 1);
+		rslt = mask.process("x", 1, 1);
 		expect(rslt.text).toBe("x");
 		expect(rslt.complete).toBe(true);
 		expect(rslt.groups.length).toBe(1);
 		expect(rslt.groups[0]).toBeUndefined();
 		expect(rslt.selectionStart).toBe(1);
 		expect(rslt.selectionEnd).toBe(1);
-		expect(rslt.truncatedValue).toBe("5");
-		expect(rslt.truncatedCursor).toBe(2);
 
 		// cursor after invalid value group incomplete
 		rslt = mask.process("-", 1, 1);
-		expect(rslt.text).toBe("x");
-		expect(rslt.complete).toBe(true);
-		expect(rslt.groups.length).toBe(1);
-		expect(rslt.groups[0]).toBeUndefined();
-		expect(rslt.selectionStart).toBe(1);
-		expect(rslt.selectionEnd).toBe(1);
-		expect(rslt.truncatedValue).toBe("-");
-		expect(rslt.truncatedCursor).toBe(2);
-	})
-
-	it("tests (d-)?x cursor location", function() {
-		var mask = new EditMask("(d-)?x");
-		var rslt;
-
-		// cursor before incomplete capture group complete
-		// the '-' is not filled in because there are no chars past the 5
-		// and appendLiterals defaults to false, thus processing stops when
-		// no more input characters
-		rslt = mask.process("5", 0, 0);
-		expect(rslt.text).toBe("x");
-		expect(rslt.complete).toBe(true);
+		expect(rslt.text).toBe("");
+		expect(rslt.complete).toBe(false);
 		expect(rslt.groups.length).toBe(1);
 		expect(rslt.groups[0]).toBeUndefined();
 		expect(rslt.selectionStart).toBe(0);
 		expect(rslt.selectionEnd).toBe(0);
-		expect(rslt.truncatedValue).toBe("5");
-		expect(rslt.truncatedCursor).toBe(0);
-
-		// cursor before incomplete capture group but valid literal
-		rslt = mask.process("5x", 0, 0);
-		expect(rslt.text).toBe("5-x");
-		expect(rslt.complete).toBe(true);
-		expect(rslt.groups.length).toBe(1);
-		expect(rslt.groups[0][0]).toBe("5");
-		expect(rslt.selectionStart).toBe(0);
-		expect(rslt.selectionEnd).toBe(0);
-
-		// cursor between 5 & x incomplete capture group but valid literal
-		rslt = mask.process("5x", 1, 1);
-		expect(rslt.text).toBe("5-x");
-		expect(rslt.complete).toBe(true);
-		expect(rslt.groups.length).toBe(1);
-		expect(rslt.groups[0][0]).toBe("5");
-		expect(rslt.selectionStart).toBe(1);
-		expect(rslt.selectionEnd).toBe(1);
-
-		// cursor after incomplete capture group but valid literal
-		rslt = mask.process("5x", 2, 2);
-		expect(rslt.text).toBe("5-x");
-		expect(rslt.complete).toBe(true);
-		expect(rslt.groups.length).toBe(1);
-		expect(rslt.groups[0][0]).toBe("5");
-		expect(rslt.selectionStart).toBe(3);
-		expect(rslt.selectionEnd).toBe(3);
-
-		// cursor after incomplete capture group w/ mask complete
-		rslt = mask.process("5", 1, 1);
-		expect(rslt.text).toBe("x");
-		expect(rslt.complete).toBe(true);
-		expect(rslt.groups.length).toBe(1);
-		expect(rslt.groups[0]).toBeUndefined();
-		expect(rslt.selectionStart).toBe(1);
-		expect(rslt.selectionEnd).toBe(1);
-		expect(rslt.truncatedValue).toBe("5");
-		expect(rslt.truncatedCursor).toBe(2);
-
-		// cursor after invalid value group w/ mask complete
-		rslt = mask.process("-", 1, 1);
-		expect(rslt.text).toBe("x");
-		expect(rslt.complete).toBe(true);
-		expect(rslt.groups.length).toBe(1);
-		expect(rslt.groups[0]).toBeUndefined();
-		expect(rslt.selectionStart).toBe(1);
-		expect(rslt.selectionEnd).toBe(1);
-		expect(rslt.truncatedValue).toBe("-");
-		expect(rslt.truncatedCursor).toBe(2);
 	})
 
 	it("tests date format", function() {
@@ -810,7 +745,6 @@ describe("EditMask", () => {
 		rslt = mask.process("1/1/1990", 0, 0);
 		expect(rslt.text).toBe("1/1/1990");
 		expect(rslt.complete).toBe(true);
-
 	})
 
 })
