@@ -28,7 +28,7 @@ function _toString(value) {
 
 
 /**
-	An <input type="text"> element that support edit masking using the solidify-ui/utils/EditMask
+	An <input type="text"> element that support edit masking using the EditMask
 	class. Set the edit mask by specifying a valid string on the 'mask' property. The component
 	exposes the isComplete() function to allow consumers of the component's value to query if the
 	mask has been fullfilled by the current value.
@@ -203,7 +203,6 @@ export default class MaskedInput extends Component {
 				onBlur={ event => this._handleBlur(event) }
 				onChange={ event => this._handleChange(event) }
 				onFocus={ event => this._handleFocus(event) }
-				onKeyPress={ event => this._handleKeyPress(event) }
 				type={ type==="password" ?type :"text" }
 			/>
 	}
