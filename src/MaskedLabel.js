@@ -27,23 +27,10 @@ function _toString(value) {
 
 
 /**
-	An <input type="text"> element that support edit masking using the EditMask
-	class. Set the edit mask by specifying a valid string on the 'mask' property. The component
-	exposes the isComplete() function to allow consumers of the component's value to query if the
-	mask has been fullfilled by the current value.
-
-	Formatter Function - 'formatter' property
-		The formmatter property is an optional property that can be set to a function. The
-		function is called during each render() when the component does not have the focus.
-		The signature of the method is:
-			function formatter(value) { ... }
-		where value is the value to be displayed. This is useful when the user is not editing
-		the model value and the UI should add additional formatting characters. An example
-		where formatting is useful is currency where you want to add commas and fixed number
-		of decimal places when the user is not editing the value. This provides a similar
-		functionality to how Excel support formatting when not editing a cell.
-
-		The value returned by the formatter() function does not affect the internal value state.
+	An <span> element that support edit masking using the EditMask class. Set the edit mask by
+	specifying a valid string on the 'mask' property. The component exposes the isComplete()
+	function to allow consumers of the component's value to query if the mask has been fullfilled
+	by the current value.
 */
 export default class MaskedLabel extends Component {
 	constructor(props, context) {
