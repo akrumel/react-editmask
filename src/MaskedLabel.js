@@ -1,5 +1,6 @@
 import omit from "lodash.omit";
-import React, { Component, PropTypes } from "react";
+import PropTypes from 'prop-types';
+import React, { Component } from "react";
 import ReactDOM from "react-dom";
 
 import EditMask from "./EditMask";

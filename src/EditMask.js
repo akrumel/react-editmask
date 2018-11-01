@@ -542,10 +542,10 @@ export default class EditMask {
 */
 function doLookahead(pidx, ch, pattern, testFn) {
 	for (let lidx=pidx, sym; sym=pattern[lidx]; lidx++) {
-		let listeralEscape = sym == '/';
-		let operatorIdx = listeralEscape ?lidx+2 :lidx+1;
-		let optional = pattern[operatorIdx] == '?'
-		let oneOrMore = pattern[operatorIdx] == '+'
+		const listeralEscape = sym == '/';
+		const operatorIdx = listeralEscape ?lidx+2 :lidx+1;
+		const optional = pattern[operatorIdx] == '?';
+		const oneOrMore = pattern[operatorIdx] == '+';
 
 		if (listeralEscape && lidx+1 == pattern.length) {
 			throw new Error("/ literal escape character cannot terminate a pattern");

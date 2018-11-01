@@ -1,5 +1,6 @@
 import omit from "lodash.omit";
-import React, { Component, PropTypes } from "react";
+import PropTypes from 'prop-types';
+import React, { Component } from "react";
 import ReactDOM from "react-dom";
 
 import EditMask from "./EditMask";
@@ -80,10 +81,18 @@ export default class MaskedInput extends Component {
 
 	componentDidUpdate(prevProps, prevState) {
 		if (this.selectionStart != null) {
-			var elt = ReactDOM.findDOMNode(this.refs.input);
+			// in some version of react, the dom has not actually updated so need to wait just a bit
+			setTimeout(
+				() => {
+					if (this.selectionStart == null) { return }
 
-			elt.setSelectionRange(this.selectionStart, this.selectionEnd);
-			this.selectionStart = null;
+					var elt = ReactDOM.findDOMNode(this.refs.input);
+
+					elt.setSelectionRange(this.selectionStart, this.selectionEnd);
+					this.selectionStart = null;
+				},
+				0
+			)
 		}
 	}
 
@@ -95,7 +104,7 @@ export default class MaskedInput extends Component {
 		return this.state.isComplete;
 	}
 
-	_handleBlur(event) {
+	_handleBlur = event => {
 		const { onBlur } = this.props;
 
 		this.setState(
@@ -106,7 +115,7 @@ export default class MaskedInput extends Component {
 		);
 	}
 
-	_handleChange(event) {
+	_handleChange = event => {
 		const { onChange } = this.props;
 		var value = event.target.value;
 		var masked;
@@ -117,7 +126,6 @@ export default class MaskedInput extends Component {
 			value = masked.text;
 			this.selectionStart = masked.selectionStart;
 			this.selectionEnd = masked.selectionEnd;
-
 			this.setState({ isComplete: masked.complete });
 		}
 
@@ -150,7 +158,7 @@ export default class MaskedInput extends Component {
 		}
 	}
 
-	_handleFocus(event) {
+	_handleFocus = event => {
 		const { onFocus } = this.props;
 
 		this.setState(
@@ -160,6 +168,16 @@ export default class MaskedInput extends Component {
 			() => onFocus && onFocus(event)
 		);
 	}
+
+	// _handleKeyPress = event => {
+	// 	const { flushOnEnter, onKeyPress } = this.props;
+
+	// 	if (event.charCode === 13 && flushOnEnter) {
+	// 		this._updateValue();
+	// 	}
+
+	// 	onKeyPress && onKeyPress(event);
+	// }
 
 	_updateValue(props=this.props) {
 		const { appendLiterals, defaultValue, eatInvalid, lookahead, mask, postprocess, preprocess, value } = props;
@@ -200,9 +218,10 @@ export default class MaskedInput extends Component {
 				ref="input"
 				type="text"
 				value={ value }
-				onBlur={ event => this._handleBlur(event) }
-				onChange={ event => this._handleChange(event) }
-				onFocus={ event => this._handleFocus(event) }
+				onBlur={ this._handleBlur }
+				onChange={ this._handleChange }
+				onFocus={ this._handleFocus }
+				//onKeyPress={ this._handleKeyPress }
 				type={ type==="password" ?type :"text" }
 			/>
 	}
