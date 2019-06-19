@@ -508,6 +508,23 @@ console.log(EditMask)
 		expect(rslt.complete).toBe(true);
 	})
 
+	it("tests pattern operator literal escape (/) and lookahead", function() {
+		var mask = new EditMask("/+d");
+		var rslt;
+
+		rslt = mask.process("", 0, 0);
+		expect(rslt.text).toBe("");
+		expect(rslt.complete).toBe(false);
+
+		rslt = mask.process("1", 0, 0);
+		expect(rslt.text).toBe("+1");
+		expect(rslt.complete).toBe(true);
+
+		rslt = mask.process("+1", 0, 0);
+		expect(rslt.text).toBe("+1");
+		expect(rslt.complete).toBe(true);
+	})
+
 	it("tests simple ()", function() {
 		var mask = new EditMask("(d+)");
 		var rslt;

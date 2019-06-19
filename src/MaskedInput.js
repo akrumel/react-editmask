@@ -48,14 +48,10 @@ function _toString(value) {
 		The value returned by the formatter() function does not affect the internal value state.
 */
 export default class MaskedInput extends Component {
-	constructor(props, context) {
-		super(props, context);
-
-		this.state = {
-			hasFocus: false,
-			mounted: true,
-			value: '',
-		}
+	state = {
+		hasFocus: false,
+		mounted: true,
+		value: '',
 	}
 
 	get value() {

@@ -542,12 +542,12 @@ export default class EditMask {
 */
 function doLookahead(pidx, ch, pattern, testFn) {
 	for (let lidx=pidx, sym; sym=pattern[lidx]; lidx++) {
-		const listeralEscape = sym == '/';
-		const operatorIdx = listeralEscape ?lidx+2 :lidx+1;
+		const literalEscape = sym == '/';
+		const operatorIdx = literalEscape ?lidx+2 :lidx+1;
 		const optional = pattern[operatorIdx] == '?';
 		const oneOrMore = pattern[operatorIdx] == '+';
 
-		if (listeralEscape && lidx+1 == pattern.length) {
+		if (literalEscape && lidx+1 == pattern.length) {
 			throw new Error("/ literal escape character cannot terminate a pattern");
 		}
 
@@ -569,7 +569,7 @@ function doLookahead(pidx, ch, pattern, testFn) {
 
 				break;
 			default:   // literal
-				if (listeralEscape) {
+				if (literalEscape) {
 					sym = pattern[lidx+1];
 				}
 
@@ -578,7 +578,7 @@ function doLookahead(pidx, ch, pattern, testFn) {
 				}
 		}
 
-		if (listeralEscape) {
+		if (literalEscape) {
 			// consume the escape operator
 			lidx++;
 		}

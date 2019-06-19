@@ -7,9 +7,11 @@ import isPatternOperator from "./isPatternOperator";
 */
 export default class CountSpec {
 	constructor(token) {
-		var op = token[token.length-1];
+		var op = token.length > 1 && token[token.length-2] === "/"
+			?""
+			:token[token.length-1];
 
-		if (isPatternOperator(op)) {
+		if (isPatternOperator(op, token)) {
 			switch (op) {
 				case "*":
 					this.operator = op;

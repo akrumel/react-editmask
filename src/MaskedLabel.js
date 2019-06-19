@@ -34,13 +34,9 @@ function _toString(value) {
 	by the current value.
 */
 export default class MaskedLabel extends Component {
-	constructor(props, context) {
-		super(props, context);
-
-		this.state = {
-			mounted: true,
-			value: '',
-		}
+	state = {
+		mounted: true,
+		value: '',
 	}
 
 	get value() {
