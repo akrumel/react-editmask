@@ -516,6 +516,14 @@ console.log(EditMask)
 		expect(rslt.text).toBe("");
 		expect(rslt.complete).toBe(false);
 
+		rslt = mask.process("+", 0, 0);
+		expect(rslt.text).toBe("+");
+		expect(rslt.complete).toBe(false);
+
+		rslt = mask.process("++", 0, 0);
+		expect(rslt.text).toBe("+");
+		expect(rslt.complete).toBe(false);
+
 		rslt = mask.process("1", 0, 0);
 		expect(rslt.text).toBe("+1");
 		expect(rslt.complete).toBe(true);
